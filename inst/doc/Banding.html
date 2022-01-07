@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Distance Classification</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Distance Classification</h1>
+
+
+
+<p>This document explains the use of “distance” in the classification of of the hillslopes into Hydrological Response Units (HRUs). This is a key difference in the classification and model creation scheme used with dynatopGIS compared to previous model implementations (e.g. the dynatopmodel).</p>
+<p>As with earlier versions of Dynamic TOPMODEL “physical” classification of the raster cells representing the hillslopes by characteristics such as topographic index, soil parameters and rainfall inputs forms etc. is the basis of determining HRUs. However having the performed a “physical” classification there is the need to determine the connectivity of the HRUs and (possibly) the computational sequence for their solution.</p>
+<p>Consider the methods utilised in the <code>dynatopmodel</code> package which determined the connectivity based on the down slope contributions of each raster cell in the HRU. This resulted in a matrix <span class="math inline">\(\mathbf{M)\)</span> of flow fractions such that if the vector of outflows from the HRUs was <span class="math inline">\(\mathbf{l}_{o}\)</span> the inflows <span class="math inline">\(\mathbf{l}_{i}\)</span> are given by <span class="math display">\[
+\mathbf{l}_{i} = \mathbf{M} \mathbf{l}_{o}
+\]</span> Determining the down slope contributions in such as fashion enables a high degree of spatial averaging of the inflow. For example an area at the bottom of the hillslope near a channel may fall into the same class as the low gradient area higher up the hillslope, where it might be reasonable to presume the inflow from adjacent HRUs was much lower. While such averaging may prove adequate for the hydrological simulation of the outflow it limits the ability of the model to represent interventions on a smaller scale (e.g. reforestation of a low fraction of raster cells; leaky dams limiting slowing the transfer of surface water)</p>
+<p>To address this a “distance” is used to ensure an order to the HRUs. Currently the code allows for the computation of four distances</p>
+<ul>
+<li><p><em>Band</em>. A strict sequencing such that all the cells up slope of a raster cell in band <span class="math inline">\(n\)</span> are in bands <span class="math inline">\(n+1\)</span> and greater.</p></li>
+<li><p><em>Shortest length</em>. The minimum length to a river channel through any flow path.</p></li>
+<li><p><em>Dominant length</em>. The length to a river channel following the flow direction with the highest fraction for each pixel on the path.</p></li>
+<li><p><em>Expected length</em>. The length to a river channel based on the sum of down slope flow weighted by the fraction of flow to each cell.</p></li>
+</ul>
+<p>The “distance” can be used in two ways. Optionally it can be used within the classification of the HRUs thereby providing spatially ordered HRUs. A “distance” is also used in the determining the connectivity. Each HRU is assigned a single distance based on the raster cells within it that are closest to the river. The flow directions from these cells are then used to determine the down slope contributions; which go to HRUs assigned a shorter distance.</p>
+<blockquote>
+<p>Although this technique is fairly generic it is strongly suggested that the band distance is used, both in classification and model generation.</p>
+</blockquote>
+<p>In handling the flow contributions this way we ensure a computational sequence for the HRUs is established (that is <span class="math inline">\(\mathbf{M}\)</span> is triangular) which is required for the computational scheme used within the associated dynatop package.</p>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
