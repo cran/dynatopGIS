@@ -30,7 +30,7 @@ dem <- raster::raster(dem_file)
 ctch$add_dem(dem)
 
 ## ---- channel_current---------------------------------------------------------
-sp_lines <- rgdal::readOGR(channel_file)
+sp_lines <- raster::shapefile(channel_file)
 head(sp_lines)
 
 ## ---- channel_properties------------------------------------------------------

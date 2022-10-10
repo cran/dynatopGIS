@@ -15,7 +15,7 @@
 #' ctch$add_dem(dem)
 #' channel_file <- system.file("extdata", "SwindaleRiverNetwork.shp",
 #' package="dynatopGIS", mustWork = TRUE)
-#' sp_lines <- rgdal::readOGR(channel_file)
+#' sp_lines <- raster::shapefile(channel_file)
 #' property_names <- c(channel_id="identifier",endNode="endNode",startNode="startNode",length="length")
 #' ctch$add_channel(sp_lines,property_names)
 #'
@@ -442,7 +442,7 @@ dynatopGIS <- R6::R6Class(
                 }else{
                     warning("Modifying to spatial polygons using specified width")
                 }
-                sp_object <- rgeos::gBuffer(sp_object, byid=TRUE, width=sp_object[['width']])
+                sp_object <- raster::buffer(sp_object, width=sp_object[['width']], dissolve=FALSE)
             }
 
             ## see if variables refered to in property_names exist
@@ -1081,7 +1081,7 @@ dynatopGIS <- R6::R6Class(
             model$channel$id <- as.integer(model$channel$id)
             ## model$channel$v_ch <- "v_ch_default"
             model$channel[["area"]] <- 0
-            tmp <- zonal(channel_area,channel_id,sum)
+            tmp <- raster::zonal(channel_area,channel_id,sum)
             model$channel[["area"]][match(tmp[,"zone"],model$channel[["id"]])] <- tmp[,"value"] ## some areas will be zero
             for(ii in names(par)){
                 model$channel[[ii]] <- as.numeric(par[ii])
@@ -1095,7 +1095,7 @@ dynatopGIS <- R6::R6Class(
             cls <- raster::raster(pos_val[class_lyr])
             dst <- raster::raster(pos_val[dist_lyr])
             ## compute minimum distance for each HRU and add new id
-            min_dst <- zonal(dst,cls,min) # minimum distance for each classification
+            min_dst <- raster::zonal(dst,cls,min) # minimum distance for each classification
             if(!all(is.finite(min_dst)) | !all(unique(cls)%in%min_dst[,"zone"])){
                 stop("Unable to compute a finite minimum distance for all HRUs")
             }
@@ -1140,9 +1140,9 @@ dynatopGIS <- R6::R6Class(
             
             model$hillslope <- data.frame(
                 id = as.integer(min_dst[,"id"]),
-                area = zonal(la,hsu,sum)[,"value"],
-                atb_bar = zonal(la*atb,hsu,sum)[,"value"],
-                s_bar = zonal(la*gr,hsu,sum)[,"value"],
+                area = raster::zonal(la,hsu,sum)[,"value"],
+                atb_bar = raster::zonal(la*atb,hsu,sum)[,"value"],
+                s_bar = raster::zonal(la*gr,hsu,sum)[,"value"],
                 min_dst = min_dst[,"value"],
                 width = as.numeric(NA),
                 s_sf = as.numeric(NA),
@@ -1151,15 +1151,6 @@ dynatopGIS <- R6::R6Class(
                 s_sz = as.numeric(NA),
                 stringsAsFactors=FALSE
             )
-            ##     r_sfmax="r_sfmax_default",
-            ##     s_rzmax="s_rzmax_default",
-            ##     s_rz0="s_rz0_default",
-            ##     ln_t0="ln_t0_default",
-            ##     m="m_default",
-            ##     t_d="t_d_default",
-            ##     c_sf="c_sf_default",
-            ##     stringsAsFactors=FALSE
-            ## )
             model$hillslope$atb_bar <- model$hillslope$atb_bar/model$hillslope$area
             model$hillslope$s_bar <- model$hillslope$s_bar/model$hillslope$area
 
