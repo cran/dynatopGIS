@@ -26,11 +26,11 @@ dem_file <- system.file("extdata", "SwindaleDTM40m.tif", package="dynatopGIS", m
 channel_file <- system.file("extdata", "SwindaleRiverNetwork.shp", package="dynatopGIS", mustWork = TRUE)
 
 ## ---- add_dem-----------------------------------------------------------------
-dem <- raster::raster(dem_file)
+dem <- terra::rast(dem_file)
 ctch$add_dem(dem)
 
 ## ---- channel_current---------------------------------------------------------
-sp_lines <- raster::shapefile(channel_file)
+sp_lines <- terra::vect(channel_file)
 head(sp_lines)
 
 ## ---- channel_properties------------------------------------------------------
@@ -60,7 +60,7 @@ tmp <- ctch$get_meta()
 ## ---- sink_fill---------------------------------------------------------------
 ctch$sink_fill()
 
-raster::plot( ctch$get_layer('filled_dem') - ctch$get_layer('dem'),
+terra::plot( ctch$get_layer('filled_dem') - ctch$get_layer('dem'),
              main="Changes to height")
 
 ## ---- calc_atb----------------------------------------------------------------
@@ -74,13 +74,13 @@ ctch$plot_layer('atb')
 tmp <- ctch$get_layer("filled_dem")
 
 ## ----height layer-------------------------------------------------------------
-tmp <- raster::reclassify( tmp,
-                          matrix(c(0,500,NA,
-                                   500,1000,-999),
-                                 byrow=TRUE))
+tmp <- terra::classify( tmp,
+                       matrix(c(0,500,NA,
+                                500,1000,-999),
+                              ncol=3, byrow=TRUE))
 
 ## ---- write_height_layer------------------------------------------------------
-raster::writeRaster(tmp,file.path(demo_dir,"greater_500.tif"))
+terra::writeRaster(tmp,file.path(demo_dir,"greater_500.tif"))
 
 ## ---- add_height_layer--------------------------------------------------------
 ctch$add_layer("greater_500",file.path(demo_dir,"greater_500.tif"))
