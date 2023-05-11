@@ -324,16 +324,13 @@ dynatopGIS <- R6::R6Class(
             #browser()
             if(!file.exists(private$meta_path)){ stop("Missing metadata file") }
             meta <- jsonlite::fromJSON(private$meta_path)            
+
             ##if(length(meta$crs)>0){meta$crs <- terra::crs(meta$crs)} ##crs(meta$crs)}
             if(length(meta$extent)>0){meta$extent <- terra::ext(meta$extent)}
             private$meta <- meta
         },
         write_meta = function(){
             meta <- private$meta
-            
-            ## if("CRS" %in% class(meta$crs)){
-            ##     meta$crs <- wkt(meta$crs) ##crs(meta$crs,asText=TRUE)
-            ## }
             if("SpatExtent" %in% class(meta$extent)){
                 meta$extent <- as.vector(meta$extent)
             }
@@ -1425,8 +1422,8 @@ dynatopGIS <- R6::R6Class(
                 hsu <- terra::rast(pos_val[layer_name])
                 channel_id <- terra::rast(pos_val["channel_id"])
                 ## this is just the frequency of the cells - should weight by area as well
-                tmp <- list(crosstab(hsu,rlyr,long=TRUE),
-                            crosstab(channel_id,rlyr,long=TRUE))
+                tmp <- list(crosstab(c(hsu,rlyr),long=TRUE),
+                            crosstab(c(channel_id,rlyr),long=TRUE))
                 for(ii in 1:length(tmp)){names(tmp[[ii]]) <- c("id","name","cnt")}
                 tmp <- do.call(rbind,tmp)
                 tmp <- tmp[order(tmp$id),]
@@ -1450,8 +1447,8 @@ dynatopGIS <- R6::R6Class(
                 hsu <- terra::rast(pos_val[layer_name])
                 channel_id <- terra::rast(pos_val["channel_id"])
                 ## this is just the frequency of the cells - should weight by area as well
-                tmp <- list(crosstab(hsu,plyr,long=TRUE),
-                            crosstab(channel_id,plyr,long=TRUE))
+                tmp <- list(crosstab(c(hsu,plyr),long=TRUE),
+                            crosstab(c(channel_id,plyr),long=TRUE))
                 for(ii in 1:length(tmp)){names(tmp[[ii]]) <- c("id","name","cnt")}
                 tmp <- do.call(rbind,tmp)
                 tmp <- tmp[order(tmp$id),]

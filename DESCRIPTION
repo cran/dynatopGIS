@@ -1,7 +1,7 @@
 Package: dynatopGIS
 Title: Algorithms for Helping Build Dynamic TOPMODEL Implementations
         from Spatial Data
-Version: 0.2.4
+Version: 0.2.5
 Authors@R: 
     person(given = "Paul",
            family = "Smith",
@@ -16,13 +16,13 @@ Depends: R (>= 4.0.0)
 BugReports: https://github.com/waternumbers/dynatopGIS/issues
 URL: https://waternumbers.github.io/dynatopGIS/,
         https://github.com/waternumbers/dynatopGIS
-RoxygenNote: 7.2.2
-Suggests: igraph, knitr, rmarkdown
+RoxygenNote: 7.2.3
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 Language: en-GB
 NeedsCompilation: no
-Packaged: 2022-11-30 23:19:22 UTC; paul
+Packaged: 2023-05-10 19:24:37 UTC; paul
 Author: Paul Smith [aut, cre] (<https://orcid.org/0000-0002-0034-3412>)
 Maintainer: Paul Smith <paul@waternumbers.co.uk>
 Repository: CRAN
-Date/Publication: 2022-12-01 00:00:02 UTC
+Date/Publication: 2023-05-11 09:40:02 UTC
